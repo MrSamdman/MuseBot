@@ -90,7 +90,11 @@ class PageList:
                     self.names.append(name)
 
         for name in self.names:
-            os.rename(f"./{name}", f"./Lists/{name}")
+            try:
+                os.rename(f"./{name}", f"./Lists/{name}")
+            except FileExistsError:
+                os.remove(name)
+                print("FILE EXISTS")
 
 # page = PageList(input("URL: "))
 # page.data_handler()
