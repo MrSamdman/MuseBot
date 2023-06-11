@@ -88,6 +88,10 @@ class PageList:
                     print(name)
                     f.write(requests.get(file).content)
                     self.names.append(name)
+
+        for name in self.names:
+            os.rename(f"./{name}", f"./Lists/{name}")
+
 # page = PageList(input("URL: "))
 # page.data_handler()
 # page.first_sheet()
