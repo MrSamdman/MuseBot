@@ -1,71 +1,98 @@
-import requests
-
-cookies = {
-    'mu_browser_bi': '6589667686921956405',
-    'mu_browser_uni': '0NBsi6fZ',
-    '_mu_unified_id': '1.1686227780.1828271',
-    'mu_unregister_user_id': '598798501',
-    '_gid': 'GA1.2.1244405920.1686227781',
-    '_ym_uid': '168622778137611141',
-    '_ym_d': '1686227781',
-    '_pbjs_userid_consent_data': '3524755945110770',
-    '__gads': 'ID=9fb567920c136c6f:T=1686227783:RT=1686227783:S=ALNI_MbyPz2DqHCp5PGZyUwRxhCWe-hzmQ',
-    '__gpi': 'UID=00000c2d51f8e9c2:T=1686227783:RT=1686227783:S=ALNI_MauaVkSj1H2gnGz8vBnhVVWK3FKFA',
-    '_identity': '%5B40664086%2C%229a0moAfzXGwkT7T-9jMSU0GgDaASI6buczKitGfdfWUA2fUi_t5C566Yh-3Z5fpl%22%2C864000%5D',
-    '_welcome_banner_first_seen_at': '1686235733349',
-    'learn.tooltip.view.count': '2',
-    'mscom_new': 'b56350134a88270b159e6d4c644509cd',
-    '_mu_atts_key': 'user_attributes%3A40664086.RU.Petrozavodsk.ru.1686283200.Europe%2FMoscow',
-    '_csrf': 'ufuOMypLB4qZNOUCJd9hEpK9LFWFKZUG',
-    'mu_ab_experiment': '2995.1_3010.2_3019.4_3031.1_3040.2_3043.2_3046.2_3049.1_3085.2',
-    '_mu_dc_regular': '%7B%22v%22%3A2%2C%22t%22%3A1686323008%7D',
-    '_ym_isad': '1',
-    '_ym_visorc': 'w',
-    '_ms_adScoreView': '6',
-    'mu_has_static_cache': '1686326844',
-    '__cf_bm': '7OHnvHZGlBA2sj.E8_a707jPa7ERMTL7lGUWULLqMv4-1686327796-0-AUwddl/ccNciKDPkE0AKbaihQnjw2I2OnTczEEiSLSSrgkXyP8Dc58U6dq5sgUBzWyXE2Q7LThTV05LUiEyG3SY=',
-    '_ga': 'GA1.1.1359321515.1686227781',
-    '_mu_session_id': '1.1686323005.1686328286',
-    '_ga_4YMPJQFQ7N': 'GS1.1.1686323010.5.1.1686328286.0.0.0',
-}
-
-headers = {
-    'authority': 'musescore.com',
-    'accept': '*/*',
-    'accept-language': 'ru,en;q=0.9',
-    'authorization': '8c022bdef45341074ce876ae57a48f64b86cdcf5',
-    # 'cookie': 'mu_browser_bi=6589667686921956405; mu_browser_uni=0NBsi6fZ; _mu_unified_id=1.1686227780.1828271; mu_unregister_user_id=598798501; _gid=GA1.2.1244405920.1686227781; _ym_uid=168622778137611141; _ym_d=1686227781; _pbjs_userid_consent_data=3524755945110770; __gads=ID=9fb567920c136c6f:T=1686227783:RT=1686227783:S=ALNI_MbyPz2DqHCp5PGZyUwRxhCWe-hzmQ; __gpi=UID=00000c2d51f8e9c2:T=1686227783:RT=1686227783:S=ALNI_MauaVkSj1H2gnGz8vBnhVVWK3FKFA; _identity=%5B40664086%2C%229a0moAfzXGwkT7T-9jMSU0GgDaASI6buczKitGfdfWUA2fUi_t5C566Yh-3Z5fpl%22%2C864000%5D; _welcome_banner_first_seen_at=1686235733349; learn.tooltip.view.count=2; mscom_new=b56350134a88270b159e6d4c644509cd; _mu_atts_key=user_attributes%3A40664086.RU.Petrozavodsk.ru.1686283200.Europe%2FMoscow; _csrf=ufuOMypLB4qZNOUCJd9hEpK9LFWFKZUG; mu_ab_experiment=2995.1_3010.2_3019.4_3031.1_3040.2_3043.2_3046.2_3049.1_3085.2; _mu_dc_regular=%7B%22v%22%3A2%2C%22t%22%3A1686323008%7D; _ym_isad=1; _ym_visorc=w; _ms_adScoreView=6; mu_has_static_cache=1686326844; __cf_bm=7OHnvHZGlBA2sj.E8_a707jPa7ERMTL7lGUWULLqMv4-1686327796-0-AUwddl/ccNciKDPkE0AKbaihQnjw2I2OnTczEEiSLSSrgkXyP8Dc58U6dq5sgUBzWyXE2Q7LThTV05LUiEyG3SY=; _ga=GA1.1.1359321515.1686227781; _mu_session_id=1.1686323005.1686328286; _ga_4YMPJQFQ7N=GS1.1.1686323010.5.1.1686328286.0.0.0',
-    'referer': 'https://musescore.com/user/89075/scores/4677401/embed',
-    'sec-ch-ua': '"Chromium";v="112", "YaBrowser";v="23", "Not:A-Brand";v="99"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 YaBrowser/23.5.2.595 Yowser/2.5 Safari/537.36',
-}
-
-params = {
-    'id': '4677401',
-    'index': '1',
-    'type': 'img',
-    'v2': '1',
-}
+import requests, data, os
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF
 
 
-def file(url: str = "https://musescore.com/user/89075/scores/4677401"):
-    embed_url = url + "/embed"
-    id_code = url.split("/")[-1]
-    if url.split("/")[-1] == "":
-        id_code = url.split("/")[-2]
+class PageList:
+    title = 'Doctor Who Main Theme 2005 - 2007'
+    sheets = []
+    id_code = '4677401'
+    embed_url = 'https://musescore.com/user/89075/scores/4677401/embed'
+    params = data.params
+    headers = data.headers
+    ext = ''
+    types = []
+    names = []
 
-    params["id"] = id_code
-    headers["referer"] = embed_url
+    def __init__(self, url="https://musescore.com/user/89075/scores/4677401"):
+        self.url = url
 
-    for i in range(1):
-        params["index"] = str(int(params["index"]) + 1)
-        response = requests.get('https://musescore.com/api/jmuse', params=params, cookies=cookies, headers=headers)
-        page = response.text[int(response.text.find("https://")):-3]
-        response = requests.get(page)
-        print(page)
-        #notes = requests.get(response)
+    def data_handler(self):
+        self.embed_url = self.url + "/embed"
+        self.id_code = self.url.split("/")[-1]
+        if self.url.split("/")[-1] == "":
+            self.id_code = self.url.split("/")[-2]
+        self.params["id"] = self.id_code
+
+    def first_sheet(self):
+        raw = requests.get(self.url)
+
+        title_raw = raw.text[650:1000]
+        title_start = title_raw.find('<meta property="og:title" content=')+35
+
+        title_end = title_raw.find('<meta property="og:url"') - 3
+        self.title = title_raw[title_start:title_end]
+
+        fp_raw = requests.get(self.embed_url).text
+        fp_start = fp_raw.find('<img src="https://musescore.com/static/musescore/scoredata/g')+10
+        fp_end = fp_raw[fp_start:].find("/score_0") + fp_start
+
+        self.ext = fp_raw[fp_end + 8:fp_end + 12]
+        print(f"First page ext.: {self.ext}")
+        self.sheets.append(fp_raw[fp_start:fp_end] + f'/score_0{self.ext}')
+
+    def sheets_gen(self, save_on_disk: bool = False):
+        for i in range(100):
+
+            list_garbage = requests.get('https://musescore.com/api/jmuse', params=self.params, headers=self.headers)
+            self.params["index"] = str(int(self.params["index"]) + 1)
+            list_link = list_garbage.text[int(list_garbage.text.find("https://")):-3]
+
+            req = requests.get(list_link)
+            print(req.status_code)
+            if req.status_code != 200:
+                break
+
+            self.sheets.append(list_link)
+
+    def type_finder(self):
+        for num, sheet in enumerate(self.sheets):
+            if num == 0:
+                self.types.append(self.ext)
+            else:
+                ext_st = str(sheet).find("score_") + 7
+                self.types.append(str(sheet)[ext_st:ext_st+4])
+                print(str(sheet)[ext_st:ext_st+4])
+
+    def file_gener_pdf(self):
+
+        for num, file in enumerate(self.sheets):
+            ext = self.types[num]
+            name = f'{self.title+str(num)}{ext}'
+            name_pdf = f'{self.title+str(num)}.pdf'
+
+            if ext == ".svg":
+
+                self.names.append(name_pdf)
+                with open(name, 'wb') as f:
+                    print(name)
+                    f.write(requests.get(file).content)
+
+                drawing = svg2rlg(name)
+                renderPDF.drawToFile(drawing, name_pdf)
+
+                print("CONVERT. DONE!")
+                os.remove(name)
+            else:
+                with open(name, 'wb') as f:
+                    print(name)
+                    f.write(requests.get(file).content)
+                    self.names.append(name)
+# page = PageList(input("URL: "))
+# page.data_handler()
+# page.first_sheet()
+# page.sheets_gen()
+# page.type_finder()
+#
+# print(page.sheets)
+# print(page.types)
