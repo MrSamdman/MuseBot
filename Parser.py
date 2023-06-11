@@ -1,106 +1,121 @@
 import requests, data, os
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
+from PyPDF2 import PdfMerger
 
 
 class PageList:
-    title = 'Doctor Who Main Theme 2005 - 2007'
+    title = ''
     sheets = []
-    id_code = '4677401'
-    embed_url = 'https://musescore.com/user/89075/scores/4677401/embed'
+    id_code = ''
+    fp_ext = ""
+    types = []
     params = data.params
     headers = data.headers
-    ext = ''
-    types = []
     names = []
+    names_not_pdf = []
 
     def __init__(self, url="https://musescore.com/user/89075/scores/4677401"):
         self.url = url
-
-    def data_handler(self):
-        self.embed_url = self.url + "/embed"
+        self.title = ''
+        self.sheets = []
+        self.fp_ext = ""
+        self.id_code = ''
+        self.params = data.params
+        self.headers = data.headers
+        self.names = []
+        self.names_not_pdf = []
+        self.types = []
         self.id_code = self.url.split("/")[-1]
-        if self.url.split("/")[-1] == "":
-            self.id_code = self.url.split("/")[-2]
         self.params["id"] = self.id_code
 
     def first_sheet(self):
-        raw = requests.get(self.url)
+        raw = requests.get(self.url).text
 
-        title_raw = raw.text[650:1000]
-        title_start = title_raw.find('<meta property="og:title" content=')+35
+        t_raw = raw[650:1000]
+        t_st = t_raw.find('<meta property="og:title" content=') + 35
+        t_end = t_raw.find('<meta property="og:url"') - 3
+        self.title = t_raw[t_st:t_end]
 
-        title_end = title_raw.find('<meta property="og:url"') - 3
-        self.title = title_raw[title_start:title_end]
+        fp_st = raw.find('<link type="image/')
+        fp_st = raw[fp_st:].find("href=")+fp_st+6
+        fp_end = raw[fp_st:].find("/score_0") + fp_st
 
-        fp_raw = requests.get(self.embed_url).text
-        fp_start = fp_raw.find('<img src="https://musescore.com/static/musescore/scoredata/g')+10
-        fp_end = fp_raw[fp_start:].find("/score_0") + fp_start
+        self.fp_ext = raw[fp_end + 8:fp_end + 12]
+        self.sheets.append(raw[fp_st:fp_end] + f'/score_0{self.fp_ext}')
 
-        self.ext = fp_raw[fp_end + 8:fp_end + 12]
-        print(f"First page ext.: {self.ext}")
-        self.sheets.append(fp_raw[fp_start:fp_end] + f'/score_0{self.ext}')
-
-    def sheets_gen(self, save_on_disk: bool = False):
+    def sheets_gen(self):
         for i in range(100):
 
-            list_garbage = requests.get('https://musescore.com/api/jmuse', params=self.params, headers=self.headers)
+            sheet_garbage = requests.get('https://musescore.com/api/jmuse', params=self.params, headers=self.headers)
             self.params["index"] = str(int(self.params["index"]) + 1)
-            list_link = list_garbage.text[int(list_garbage.text.find("https://")):-3]
+            list_link = sheet_garbage.text[int(sheet_garbage.text.find("https://")):-3]
 
             req = requests.get(list_link)
-            print(req.status_code)
+
             if req.status_code != 200:
                 break
-
+            print(f"Pages status code: {req.status_code}")
             self.sheets.append(list_link)
 
     def type_finder(self):
         for num, sheet in enumerate(self.sheets):
             if num == 0:
-                self.types.append(self.ext)
+                self.types.append(self.fp_ext)
             else:
                 ext_st = str(sheet).find("score_") + 7
                 self.types.append(str(sheet)[ext_st:ext_st+4])
-                print(str(sheet)[ext_st:ext_st+4])
+        print(self.types)
 
     def file_gener_pdf(self):
-
-        for num, file in enumerate(self.sheets):
+        for num, sheet in enumerate(self.sheets):
             ext = self.types[num]
             name = f'{self.title+str(num)}{ext}'
             name_pdf = f'{self.title+str(num)}.pdf'
 
             if ext == ".svg":
-
                 self.names.append(name_pdf)
+
                 with open(name, 'wb') as f:
                     print(name)
-                    f.write(requests.get(file).content)
+                    f.write(requests.get(sheet).content)
 
-                drawing = svg2rlg(name)
-                renderPDF.drawToFile(drawing, name_pdf)
+                renderPDF.drawToFile(svg2rlg(name), name_pdf)
 
                 print("CONVERT. DONE!")
                 os.remove(name)
             else:
-                with open(name, 'wb') as f:
-                    print(name)
-                    f.write(requests.get(file).content)
-                    self.names.append(name)
+                with open(f"{name}", 'wb') as f:
+                    print(f"NOT SVG: {name}")
+                    f.write(requests.get(sheet).content)
+                    self.names_not_pdf.append(name)
 
-        for name in self.names:
+        if self.names:
+            merger = PdfMerger()
+            for pdf in self.names:
+                merger.append(pdf)
+            merger.write(f"{self.title}.pdf")
+            merger.close()
+
             try:
-                os.rename(f"./{name}", f"./Lists/{name}")
+                os.rename(f"./{self.title}.pdf", f"./Lists/{self.title}.pdf")
             except FileExistsError:
-                os.remove(name)
+                os.remove(f"{self.title}.pdf")
                 print("FILE EXISTS")
 
+        if self.names_not_pdf:
+            for name in self.names_not_pdf:
+                try:
+                    os.rename(f"./{name}", f"./Lists/{name}")
+                except FileExistsError:
+                    os.remove(f"{name}")
+                    print("FILE EXISTS")
+
+
 # page = PageList(input("URL: "))
-# page.data_handler()
 # page.first_sheet()
 # page.sheets_gen()
 # page.type_finder()
+# page.file_gener_pdf()
 #
 # print(page.sheets)
-# print(page.types)
