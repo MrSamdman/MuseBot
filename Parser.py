@@ -2,9 +2,13 @@ import requests, data, os
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
 from PyPDF2 import PdfMerger
+from PIL import Image
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class PageList:
+    all_types = [".svg", ".png"]
     title = ''
     sheets = []
     id_code = ''
@@ -60,12 +64,10 @@ class PageList:
 
     def type_finder(self):
         for num, sheet in enumerate(self.sheets):
-            if num == 0:
-                self.types.append(self.fp_ext)
-            else:
-                ext_st = str(sheet).find("score_") + 7
-                self.types.append(str(sheet)[ext_st:ext_st+4])
-        print(self.types)
+            print(sheet)
+            for t in self.all_types:
+                if str(sheet).find(t) != -1:
+                    self.types.append(t)
 
     def file_gener_pdf(self):
         for num, sheet in enumerate(self.sheets):
@@ -73,34 +75,37 @@ class PageList:
             name = f'{self.title+str(num)}{ext}'
             name_pdf = f'{self.title+str(num)}.pdf'
 
+            with open(name, 'wb') as f:
+                print(name)
+                f.write(requests.get(sheet).content)
+
             if ext == ".svg":
                 self.names.append(name_pdf)
-
-                with open(name, 'wb') as f:
-                    print(name)
-                    f.write(requests.get(sheet).content)
-
                 renderPDF.drawToFile(svg2rlg(name), name_pdf)
-
-                print("CONVERT. DONE!")
                 os.remove(name)
             else:
-                with open(f"{name}", 'wb') as f:
-                    print(f"NOT SVG: {name}")
-                    f.write(requests.get(sheet).content)
-                    self.names_not_pdf.append(name)
+                self.names.append(name_pdf)
+                image_1 = Image.open(name)
+                im_1 = image_1.convert('RGB')
+                im_1.save(f"{name_pdf}")
+                os.remove(name)
+
+            print("CONVERT. DONE!")
 
         if self.names:
             merger = PdfMerger()
             for pdf in self.names:
                 merger.append(pdf)
-            merger.write(f"{self.title}.pdf")
+            merger.write(f"1.pdf")
             merger.close()
 
+            for name in self.names:
+                os.remove(name)
+
             try:
-                os.rename(f"./{self.title}.pdf", f"./Lists/{self.title}.pdf")
+                os.rename(f"./1.pdf", f"./Lists/1.pdf")
             except FileExistsError:
-                os.remove(f"{self.title}.pdf")
+                os.remove(f"1.pdf")
                 print("FILE EXISTS")
 
         if self.names_not_pdf:

@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 cookies = {
     'mu_browser_bi': '6589667686921956405',
     'mu_browser_uni': '0NBsi6fZ',
@@ -31,7 +35,7 @@ headers = {
     'authority': 'musescore.com',
     'accept': '*/*',
     'accept-language': 'ru,en;q=0.9',
-    'authorization': '8c022bdef45341074ce876ae57a48f64b86cdcf5',
+    'authorization': os.getenv("authorization"),
     'referer': 'https://musescore.com/user/89075/scores/4677401/embed',
     # 'sec-ch-ua': '"Chromium";v="112", "YaBrowser";v="23", "Not:A-Brand";v="99"',
     # 'sec-ch-ua-mobile': '?0',
