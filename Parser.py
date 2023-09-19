@@ -49,8 +49,8 @@ class PageList:
         self.sheets.append(raw[fp_st:fp_end] + f'/score_0{self.fp_ext}')
 
     def sheets_gen(self):
+        self.params["index"] = 1
         for i in range(100):
-
             sheet_garbage = requests.get('https://musescore.com/api/jmuse', params=self.params, headers=self.headers)
             self.params["index"] = str(int(self.params["index"]) + 1)
             list_link = sheet_garbage.text[int(sheet_garbage.text.find("https://")):-3]
